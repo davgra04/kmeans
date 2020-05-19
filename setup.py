@@ -9,6 +9,7 @@ setuptools.setup(
     author="David Graves",
     author_email="dgravesdev@gmail.com",
     description="Baylor College of Medicine Scientific Programmer I Assignment",
+    license="MIT",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/davgra04/kmeans",
@@ -19,4 +20,7 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     python_requires='>=3.6',
+    install_requires=[
+        "numpy",
+    ],
 )
