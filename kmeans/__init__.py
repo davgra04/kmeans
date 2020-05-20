@@ -1,7 +1,7 @@
 
-from .heyo import *
 from .io import *
-from .solvek import *
 from .kmeans import *
+from .pipeline import *
+from .solvek import *
 
-# __all__ = ["heyo"]
+__all__ = ["io", "kmeans", "pipeline", "solvek"]

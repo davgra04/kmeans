@@ -1,7 +1,9 @@
 import numpy as np
+import random
 
-
-def adjust_grouping(data, grouping, centers):
+# adjust_grouping updates the grouping array such that each data point is grouped
+# with the nearest centroid
+def adjust_grouping(data, grouping, centroids):
 
     # find closest cluster center for each data point
     for d_idx in range(len(data)):
@@ -11,8 +13,8 @@ def adjust_grouping(data, grouping, centers):
         min_c_idx = 0
 
         # check distance each center, keep track of minimum
-        for c_idx in range(len(centers)):
-            c = centers[c_idx]
+        for c_idx in range(len(centroids)):
+            c = centroids[c_idx]
             dist = (d - c).T @ (d - c)
 
             if dist < min_dist:
@@ -23,36 +25,32 @@ def adjust_grouping(data, grouping, centers):
         grouping[d_idx] = min_c_idx
 
 
+# adjust_centroids updates the centroid positions in order to minimize the objective
+# function (minimize euclidean distance between centroid and points in group)
+def adjust_centroids(data, grouping, centroids):
 
-def adjust_centers(data, grouping, centers):
-
-    for c_idx in range(len(centers)):
-        c = centers[c_idx]
+    for c_idx in range(len(centroids)):
+        c = centroids[c_idx]
         num_pts = num_points_in_cluster(grouping, c_idx)
 
         # if no points in this cluster, randomly set center to another cluster's center
-        if num_pts == 0:
-            print("NO POINTS IN THIS CLUSTER")
-            old_c = c
-            while (old_c == centers[c_idx]).all():
-                centers[c_idx] = centers[random.randint(0, len(centers)-1)]
+        if num_pts == 0:            
+            # move centroid to location of a random data point
+            # print("NO POINTS IN CLUSTER")
+            centroids[c_idx] = data[random.randint(0, len(data)-1)]
+
             continue
 
-        # still have points in cluster, update position
+        # still have points in cluster, calculate new position
         sum = np.zeros(data[0].shape)
         for d_idx in range(len(data)):
             if grouping[d_idx] != c_idx:    # skip data points not in cluster
                 continue
             sum += data[d_idx]
-
-        new_c = 1 / num_pts * sum
-
-        # print("new_c:", new_c)
-
-        centers[c_idx] = new_c
+        centroids[c_idx] = 1 / num_pts * sum
 
 
-
+# num_points_in_cluster returns the number of data points within a specified cluster
 def num_points_in_cluster(grouping, c_idx):
     count = 0
     for c in grouping:
@@ -60,24 +58,28 @@ def num_points_in_cluster(grouping, c_idx):
             count += 1
     return count
 
-def kmeans(data, k, threshold=100):
 
-    # randomly initialize cluster centers from data
-    npoints = len(data)
-    ndim = len(data[0])
-    print("npoints:", npoints)
-    print("ndim:", ndim)
-    print("k:", k)
+# kmeans clusters the given data points into k clusters
+#   data - The data array to cluster
+#   k - number of clusters to create
+#   threshold - number of consecutive iterations for the clustering to remain stable
+#               in order to be considered converged
+#   init - initialization method for clusters, must be "random_assignment" or "forgy"
+def kmeans(data, k, threshold=10, init="random_assignment"):
 
-    index = np.random.choice(data.shape[0], k, replace=False)  
+    # initialize centroids and grouping
+    if init == "random_assignment":
+        centroids = np.tile(np.zeros(data[0].shape), (k,1))
+        grouping = np.random.randint(low=0, high=k, size=len(data))
+        adjust_centroids(data, grouping, centroids)
+    elif init == "forgy":
+        index = np.random.choice(data.shape[0], k, replace=False)  
+        centroids = data[index]               # cluster centroids
+        grouping = np.zeros(len(data), dtype=np.int)      # assignment of data point to cluster
+    else:
+        raise ValueError("{} unrecognized. init must be either \"random_assignment\" or \"forgy\"!".format(init))
 
-    centers = data[index]               # cluster centers
-    grouping = np.zeros(len(data))      # assignment of data point to cluster
-
-    print("index:", index)
-    print("centers:\n", centers)
-
-
+    # iterate until clusters have converged
     converged = False
     conv_count = 0
 
@@ -85,9 +87,9 @@ def kmeans(data, k, threshold=100):
         # save previous state
         previous_grouping = grouping.copy()
 
-        # iterate grouping and cluster centers
-        adjust_grouping(data, grouping, centers)
-        adjust_centers(data, grouping, centers)
+        # iterate grouping and cluster centroids
+        adjust_grouping(data, grouping, centroids)
+        adjust_centroids(data, grouping, centroids)
 
         # check if converged
         if (grouping == previous_grouping).all():
@@ -97,20 +99,7 @@ def kmeans(data, k, threshold=100):
         else:
             conv_count = 0
 
-
-    print("done")
-    print(grouping)
-
-
-
-
-    # dummy output
-    # grouping = np.zeros(len(data))
-
-    # for i in range(len(data)//2, len(data)):
-    #     grouping[i] = 1
-
-    return grouping, centers
+    return grouping, centroids
 
 
 
