@@ -37,7 +37,7 @@ pip install git+https://github.com/davgra04/kmeans.git
 import kmeans
 
 # process all datasets using default params
-km.process_all_datasets(max_clusters=10)
+kmeans.process_all_datasets(max_clusters=10)
 
 # OR specify parameters
 #       max_clusters - maximum number of clusters to consider (iterates from 2 
@@ -46,7 +46,7 @@ km.process_all_datasets(max_clusters=10)
 #       kmeans_iter  - number of iterations to run kmeans for a given k
 #                      (will use clustering with best silhouette score)
 #                      default: 5
-km.process_all_datasets(max_clusters=10, kmeans_iter=5)
+kmeans.process_all_datasets(max_clusters=10, kmeans_iter=5)
 ```
 
 ## Approach

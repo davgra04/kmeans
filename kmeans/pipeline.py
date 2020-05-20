@@ -22,16 +22,13 @@ def process_dataset(path, max_clusters=None, kmeans_iter=5):
 
 def process_all_datasets(dirname="datasets/", max_clusters=None, kmeans_iter=5):
 
-    # print(os.listdir(dirname))
+    data_files = []
 
-    data_files = [dirname + d for d in os.listdir(dirname) if d.endswith(".txt")]
-    # print(data_files)
+    for d in os.listdir(dirname):
+        if d.endswith(".txt") and "_" not in d:
+            data_files.append(dirname + d)
+
 
     for d in data_files:
         process_dataset(d, max_clusters=max_clusters, kmeans_iter=kmeans_iter)
-
-    pass
-
-
-
 
