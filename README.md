@@ -1,9 +1,22 @@
 kmeans
 ======
 
-An package for finding the optimal K for K means clustering for a given set of n-dimensional data points.
+A package for finding the optimal K for K means clustering for a given set of n-dimensional data points.
 
-Implemented for Baylor College of Medicine Scientific Programmer I Assignment.
+Implemented for Baylor College of Medicine Scientific Programmer I Assignment. This solution was developed on May 19, 2020 in about 9h 45m, from receiving the assignment at 9:45a to the final submitted commit at 7:28p (commit ID `69ef4eb`).
+
+**Table Of Contents**
+- [Assignment Description](#assignment-description)
+- [Usage](#usage)
+  - [Install Package From GitHub](#install-package-from-github)
+  - [Use kmeans Package in Script](#use-kmeans-package-in-script)
+- [Approach](#approach)
+  - [Performing k-means Clustering](#performing-k-means-clustering)
+  - [Determining Optimal k](#determining-optimal-k)
+- [Problems](#problems)
+  - [Issues Clustering](#issues-clustering)
+  - [It's Slow](#its-slow)
+- [Primary Resources Used](#primary-resources-used)
 
 ## Assignment Description
 
@@ -37,12 +50,12 @@ pip install git+https://github.com/davgra04/kmeans.git
 import kmeans
 
 # process all datasets using default params
-kmeans.process_all_datasets(max_clusters=10)
+kmeans.process_all_datasets()
 
 # OR specify parameters
 #       max_clusters - maximum number of clusters to consider (iterates from 2 
 #                      to max_clusters)
-#                      default: num_data_points//5
+#                      default: num_data_points//10
 #       kmeans_iter  - number of iterations to run kmeans for a given k
 #                      (will use clustering with best silhouette score)
 #                      default: 5
